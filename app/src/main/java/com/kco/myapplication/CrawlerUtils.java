@@ -15,14 +15,18 @@ public final class CrawlerUtils {
 
     private static final String baseUrl = "https://www.aitaotu.com/taotu/";
 
-    public static Observable<String> findIndex(){
-        return Observable.create(new ObservableOnSubscribe<String>() {
+    public static Observable<GirlPhotoBean> findIndex(){
+        return Observable.create(new ObservableOnSubscribe<GirlPhotoBean>() {
             @Override
-            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+            public void subscribe(ObservableEmitter<GirlPhotoBean> emitter) throws Exception {
                 Document parse = Jsoup.connect(baseUrl).execute().parse();
-                Elements as = parse.select(".taotu-main a > img");
-                for (Element a : as){
-                    emitter.onNext(a.parent().attr("abs:href"));
+                parse.select(".longword").remove();
+                Elements lis = parse.select(".taotu-main li");
+                for (Element li : lis){
+                    String url = li.select("a").first().attr("abs:href");
+                    String imageUrl = li.select("a img").first().attr("abs:src");
+                    String name = li.select("p").first().text();
+                    emitter.onNext(new GirlPhotoBean(url, imageUrl, name));
                 }
                 emitter.onComplete();
             }

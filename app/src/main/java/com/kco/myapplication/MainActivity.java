@@ -10,6 +10,7 @@ import butterknife.ButterKnife;
 import com.SuperKotlin.pictureviewer.ImagePagerActivity;
 import com.SuperKotlin.pictureviewer.PictureConfig;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -17,35 +18,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final static String TAG = "MainActivity";
     @BindView(R.id.recycler_view)
     public RecyclerView recyclerView;
 
-    private List<String> imageUrlList = new ArrayList<>();
+    private List<GirlPhotoBean> imageUrlList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        ImageAdapter adapter = new ImageAdapter(MainActivity.this);
+        ImageAdapter adapter = new ImageAdapter(imageUrlList, MainActivity.this);
         recyclerView.setAdapter(adapter);
         initUrl(adapter);
-
-
     }
 
     private void initUrl(final ImageAdapter adapter) {
 
         CrawlerUtils.findIndex().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Consumer<GirlPhotoBean>() {
                     @Override
-                    public void accept(String s) throws Exception {
-                        Log.d("initUrl", "accept: " + s);
-                        adapter.addItem(s);
+                    public void accept(GirlPhotoBean girlPhotoBean) throws Exception {
+                        imageUrlList.add(girlPhotoBean);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e(TAG, "accept: " + throwable);
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
                         adapter.notifyDataSetChanged();
                     }
                 });

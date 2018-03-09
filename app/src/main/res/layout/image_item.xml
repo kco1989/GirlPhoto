@@ -6,10 +6,14 @@
         android:layout_height="wrap_content"
     >
 
-    <Button
-            android:id="@+id/image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
+    <ImageView
+            android:id="@+id/girl_group_img"
+            android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/girl_group_name"
+            android:layout_width="wrap_content"
+              android:layout_height="wrap_content"/>
 
 </LinearLayout>
