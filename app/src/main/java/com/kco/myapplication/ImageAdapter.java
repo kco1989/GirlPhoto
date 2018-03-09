@@ -55,37 +55,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             ButterKnife.bind(this, itemView);
             this.context = context;
         }
-
-//        @OnClick(R.id.image_button)
-//        public void onClick(View view){
-//            Log.d(TAG, "onClick: " + view);
-//            List<String> list = new ArrayList<>();
-//            CrawlerUtils.getImageUrl((String) ((Button)view).getText())
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(Schedulers.io())
-//                    .reduce(new ArrayList<String>(), new BiFunction<ArrayList<String>, String, ArrayList<String>>() {
-//                        @Override
-//                        public ArrayList<String> apply(ArrayList<String> objects, String s) throws Exception {
-//                            objects.add(s);
-//                            return objects;
-//                        }
-//                    })
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(new Consumer<ArrayList<String>>() {
-//                        @Override
-//                        public void accept(ArrayList<String> strings) throws Exception {
-//                            PictureConfig config = new PictureConfig.Builder()
-//                            .setListData(strings)	//图片数据List<String> list
-//                            .setPosition(0)	//图片下标（从第position张图片开始浏览）
-//                            .setDownloadPath("pictureviewer")	//图片下载文件夹地址
-//                            .setIsShowNumber(true)//是否显示数字下标
-//                            .needDownload(true)	//是否支持图片下载
-//                            .setPlacrHolder(R.drawable.koala)	//占位符图片（图片加载完成前显示的资源图片，来源drawable或者mipmap）
-//                            .build();
-//                            ImagePagerActivity.startActivity(context , config);
-//                        }
-//                    });
-//        }
     }
 
 
@@ -121,6 +90,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                                         .setPlacrHolder(R.drawable.koala)    //占位符图片（图片加载完成前显示的资源图片，来源drawable或者mipmap）
                                         .build();
                                 ImagePagerActivity.startActivity(context, config);
+
                             }
                         });
             }

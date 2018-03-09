@@ -7,8 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.SuperKotlin.pictureviewer.ImagePagerActivity;
-import com.SuperKotlin.pictureviewer.PictureConfig;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
