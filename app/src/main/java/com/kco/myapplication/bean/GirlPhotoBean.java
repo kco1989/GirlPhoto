@@ -1,4 +1,4 @@
-package com.kco.myapplication;
+package com.kco.myapplication.bean;
 
 /**
  * Created by 666666 on 2018/3/9.

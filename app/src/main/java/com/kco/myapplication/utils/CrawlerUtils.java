@@ -1,5 +1,7 @@
-package com.kco.myapplication;
+package com.kco.myapplication.utils;
 
+import android.util.Log;
+import com.kco.myapplication.bean.GirlPhotoBean;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -34,9 +36,11 @@ public final class CrawlerUtils {
     }
 
     public static Observable<String> getImageUrl(final String url){
+        Log.d("CrawlerUtils", "getImageUrl: " + url);
         return Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                Log.d("url", "subscribe: " + url);
                 paserImage(url, emitter);
             }
         });
