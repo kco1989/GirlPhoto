@@ -9,6 +9,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -19,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
     @BindView(R.id.recycler_view)
     public RecyclerView recyclerView;
-
     private List<GirlPhotoBean> imageUrlList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,24 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<GirlPhotoBean>() {
                     @Override
-                    public void accept(GirlPhotoBean girlPhotoBean) throws Exception {
+                    public void accept(final GirlPhotoBean girlPhotoBean) throws Exception {
                         imageUrlList.add(girlPhotoBean);
+                        CrawlerUtils.getImageUrl(girlPhotoBean.getUrl())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.io())
+                                .reduce(new ArrayList<String>(), new BiFunction<ArrayList<String>, String, ArrayList<String>>() {
+                                    @Override
+                                    public ArrayList<String> apply(ArrayList<String> objects, String s) throws Exception {
+                                        objects.add(s);
+                                        return objects;
+                                    }
+                                })
+                                .subscribe(new Consumer<ArrayList<String>>() {
+                                    @Override
+                                    public void accept(ArrayList<String> strings) throws Exception {
+                                        adapter.imageMap.put(girlPhotoBean.getUrl(), strings);
+                                    }
+                                });
                     }
                 }, new Consumer<Throwable>() {
                     @Override

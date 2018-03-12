@@ -14,7 +14,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.SuperKotlin.pictureviewer.ImagePagerActivity;
 import com.SuperKotlin.pictureviewer.PictureConfig;
-import io.reactivex.*;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
@@ -26,6 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by 666666 on 2018/3/9.
@@ -35,6 +39,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private List<GirlPhotoBean> mUrlList;
     private static final String TAG = "ImageAdapter";
     private Context context;
+    public Map<String, List<String>> imageMap = new ConcurrentHashMap<>();
 
     public ImageAdapter(List<GirlPhotoBean> urlList, Context context) {
         this.mUrlList = urlList;
@@ -67,32 +72,46 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 GirlPhotoBean girlPhotoBean = (GirlPhotoBean) v.getTag();
-                CrawlerUtils.getImageUrl(girlPhotoBean.getUrl())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
-                        .reduce(new ArrayList<String>(), new BiFunction<ArrayList<String>, String, ArrayList<String>>() {
-                            @Override
-                            public ArrayList<String> apply(ArrayList<String> objects, String s) throws Exception {
-                                objects.add(s);
-                                return objects;
-                            }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<ArrayList<String>>() {
-                            @Override
-                            public void accept(ArrayList<String> strings) throws Exception {
-                                PictureConfig config = new PictureConfig.Builder()
-                                        .setListData(strings)    //图片数据List<String> list
-                                        .setPosition(0)    //图片下标（从第position张图片开始浏览）
-                                        .setDownloadPath("pictureviewer")    //图片下载文件夹地址
-                                        .setIsShowNumber(true)//是否显示数字下标
-                                        .needDownload(true)    //是否支持图片下载
-                                        .setPlacrHolder(R.drawable.koala)    //占位符图片（图片加载完成前显示的资源图片，来源drawable或者mipmap）
-                                        .build();
-                                ImagePagerActivity.startActivity(context, config);
+                List<String> list = imageMap.get(girlPhotoBean);
+                if (list == null || list.isEmpty()){
+                    CrawlerUtils.getImageUrl(girlPhotoBean.getUrl())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(Schedulers.io())
+                            .reduce(new ArrayList<String>(), new BiFunction<ArrayList<String>, String, ArrayList<String>>() {
+                                @Override
+                                public ArrayList<String> apply(ArrayList<String> objects, String s) throws Exception {
+                                    objects.add(s);
+                                    return objects;
+                                }
+                            })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<ArrayList<String>>() {
+                                @Override
+                                public void accept(ArrayList<String> strings) throws Exception {
+                                    PictureConfig config = new PictureConfig.Builder()
+                                            .setListData(strings)    //图片数据List<String> list
+                                            .setPosition(0)    //图片下标（从第position张图片开始浏览）
+                                            .setDownloadPath("pictureviewer")    //图片下载文件夹地址
+                                            .setIsShowNumber(true)//是否显示数字下标
+                                            .needDownload(true)    //是否支持图片下载
+                                            .setPlacrHolder(R.drawable.koala)    //占位符图片（图片加载完成前显示的资源图片，来源drawable或者mipmap）
+                                            .build();
+                                    ImagePagerActivity.startActivity(context, config);
 
-                            }
-                        });
+                                }
+                            });
+                }else{
+                    PictureConfig config = new PictureConfig.Builder()
+                            .setListData((ArrayList<String>) list)    //图片数据List<String> list
+                            .setPosition(0)    //图片下标（从第position张图片开始浏览）
+                            .setDownloadPath("pictureviewer")    //图片下载文件夹地址
+                            .setIsShowNumber(true)//是否显示数字下标
+                            .needDownload(true)    //是否支持图片下载
+                            .setPlacrHolder(R.drawable.koala)    //占位符图片（图片加载完成前显示的资源图片，来源drawable或者mipmap）
+                            .build();
+                    ImagePagerActivity.startActivity(context, config);
+                }
+
             }
         });
         return holder;
