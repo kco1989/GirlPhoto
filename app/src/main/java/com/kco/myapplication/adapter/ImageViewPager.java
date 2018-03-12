@@ -45,7 +45,7 @@ public class ImageViewPager extends PagerAdapter {
 
         Glide.with(context)
                 .load(list.get(position))
-                .placeholder(R.drawable.koala)
+                .placeholder(R.drawable.timg)
                 .into(imageView);
         container.addView(imageView);
         viewMap.put(list.get(position), imageView);
